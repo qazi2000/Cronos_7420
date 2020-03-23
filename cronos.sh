@@ -33,6 +33,7 @@ CR_AIK=$CR_DIR/Cronos/A.I.K
 # Main Ramdisk Location
 CR_RAMDISK=$CR_DIR/Cronos/Ramdisk
 CR_RAMDISK_Q=$CR_DIR/Cronos/Q
+CR_RAMDISK_AOSP=$CR_DIR/Cronos/AOSP
 # Compiled image name and location (Image/zImage)
 CR_KERNEL=$CR_DIR/arch/arm64/boot/Image
 # Compiled dtb by dtbtool
@@ -87,6 +88,7 @@ CR_CONFIG_AUDIENCE=audience_defconfig
 CR_CONFIG_INTL=intl_defconfig
 CR_CONFIG_SPLIT=NULL
 CR_CONFIG_HELIOS=helios_defconfig
+CR_CONFIG_AOSP=aosp_defconfig
 CR_S6MOD="2"
 CR_AUDIO=NULL
 #####################################################
@@ -103,7 +105,7 @@ else
 fi
 
 # Treble / OneUI
-read -p "Variant? (1 (OneUI) | 2 (OneUI Q) > " aud
+read -p "Variant? (1 (OneUI) | 2 (OneUI Q) | 3 (AOSP Q) > " aud
 if [ "$aud" = "1" ]; then
      echo "Build OneUI Variant"
      CR_MODE="1"
@@ -111,6 +113,10 @@ fi
 if [ "$aud" = "2" ]; then
      echo "Build OneUI Q Variant"
      CR_MODE="2"
+fi
+if [ "$aud" = "3" ]; then
+     echo "Build AOSP Q Variant"
+     CR_MODE="3"
 fi
 
 BUILD_CLEAN()
@@ -149,8 +155,8 @@ BUILD_GENERATE_CONFIG()
 {
   # Only use for devices that are unified with 2 or more configs
   echo "----------------------------------------------"
-	echo " "
-	echo "Building defconfig for $CR_VARIANT"
+  echo " "
+  echo "Building defconfig for $CR_VARIANT"
   echo " "
   # Respect CLEAN build rules
   BUILD_CLEAN
@@ -169,6 +175,10 @@ BUILD_GENERATE_CONFIG()
   if [ $CR_CONFIG_AUDIO = "$CR_CONFIG_AUDIENCE" ]; then
     echo " Copy $CR_CONFIG_AUDIO "
     cat $CR_DIR/arch/$CR_ARCH/configs/$CR_CONFIG_AUDIO >> $CR_DIR/arch/$CR_ARCH/configs/tmp_defconfig
+  fi
+  if [ $CR_MODE = "3" ]; then
+    echo " Copy $CR_CONFIG_AOSP"
+    cat $CR_DIR/arch/$CR_ARCH/configs/$CR_CONFIG_AOSP >> $CR_DIR/arch/$CR_ARCH/configs/tmp_defconfig
   fi
   echo " Copy $CR_CONFIG_HELIOS "
   cat $CR_DIR/arch/$CR_ARCH/configs/$CR_CONFIG_HELIOS >> $CR_DIR/arch/$CR_ARCH/configs/tmp_defconfig
@@ -319,6 +329,11 @@ do
               CR_VARIANT=$CR_VARIANT-Q
               CR_RAMDISK=$CR_RAMDISK_Q
             fi
+            if [ $CR_MODE = "3" ]; then
+              echo " Building AOSP-Q variant "
+              CR_VARIANT=$CR_VARIANT-AOSP
+              CR_RAMDISK=$CR_RAMDISK_AOSP
+            fi
             BUILD_HACKS
             BUILD_GENERATE_CONFIG
             BUILD_ZIMAGE
@@ -345,6 +360,11 @@ do
               echo " Building Oneui-Q variant "
               CR_VARIANT=$CR_VARIANT-Q
               CR_RAMDISK=$CR_RAMDISK_Q
+            fi
+            if [ $CR_MODE = "3" ]; then
+              echo " Building AOSP-Q variant "
+              CR_VARIANT=$CR_VARIANT-AOSP
+              CR_RAMDISK=$CR_RAMDISK_AOSP
             fi
             read -p "Extended Battery? (y/n) > " yn
             if [ "$yn" = "Y" -o "$yn" = "y" ]; then
@@ -383,6 +403,11 @@ do
               CR_VARIANT=$CR_VARIANT-Q
               CR_RAMDISK=$CR_RAMDISK_Q
             fi
+            if [ $CR_MODE = "3" ]; then
+              echo " Building AOSP-Q variant "
+              CR_VARIANT=$CR_VARIANT-AOSP
+              CR_RAMDISK=$CR_RAMDISK_AOSP
+            fi
             BUILD_HACKS
             BUILD_GENERATE_CONFIG
             BUILD_ZIMAGE
@@ -410,6 +435,11 @@ do
               CR_VARIANT=$CR_VARIANT-Q
               CR_RAMDISK=$CR_RAMDISK_Q
             fi
+            if [ $CR_MODE = "3" ]; then
+              echo " Building AOSP-Q variant "
+              CR_VARIANT=$CR_VARIANT-AOSP
+              CR_RAMDISK=$CR_RAMDISK_AOSP
+            fi
             BUILD_HACKS
             BUILD_GENERATE_CONFIG
             BUILD_ZIMAGE
@@ -433,6 +463,11 @@ do
               CR_VARIANT=$CR_VARIANT-Q
               CR_RAMDISK=$CR_RAMDISK_Q
             fi
+            if [ $CR_MODE = "3" ]; then
+              echo " Building AOSP-Q variant "
+              CR_VARIANT=$CR_VARIANT-AOSP
+              CR_RAMDISK=$CR_RAMDISK_AOSP
+            fi
             BUILD_HACKS
             BUILD_GENERATE_CONFIG
             BUILD_ZIMAGE
@@ -455,6 +490,11 @@ do
               echo " Building Oneui-Q variant "
               CR_VARIANT=$CR_VARIANT-Q
               CR_RAMDISK=$CR_RAMDISK_Q
+            fi
+            if [ $CR_MODE = "3" ]; then
+              echo " Building AOSP-Q variant "
+              CR_VARIANT=$CR_VARIANT-AOSP
+              CR_RAMDISK=$CR_RAMDISK_AOSP
             fi
             echo "Including Stock Battery DTSI"
             CR_S6MOD="0"
@@ -480,6 +520,11 @@ do
               echo " Building Oneui-Q variant "
               CR_VARIANT=$CR_VARIANT-Q
               CR_RAMDISK=$CR_RAMDISK_Q
+            fi
+            if [ $CR_MODE = "3" ]; then
+              echo " Building AOSP-Q variant "
+              CR_VARIANT=$CR_VARIANT-AOSP
+              CR_RAMDISK=$CR_RAMDISK_AOSP
             fi
             echo "Including S7E Battery modded DTSI"
             CR_S6MOD="1"
