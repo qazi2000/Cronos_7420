@@ -91,6 +91,7 @@ CR_CONFIG_HELIOS=helios_defconfig
 CR_CONFIG_AOSP=aosp_defconfig
 CR_S6MOD="2"
 CR_AUDIO=NULL
+CR_PERMISSIVE="0"
 #####################################################
 
 # Script functions
@@ -109,6 +110,7 @@ read -p "Variant? (1 (OneUI) | 2 (OneUI Q) | 3 (AOSP Q) > " aud
 if [ "$aud" = "1" ]; then
      echo "Build OneUI Variant"
      CR_MODE="1"
+     CR_PERMISSIVE="1"
 fi
 if [ "$aud" = "2" ]; then
      echo "Build OneUI Q Variant"
@@ -117,6 +119,7 @@ fi
 if [ "$aud" = "3" ]; then
      echo "Build AOSP Q Variant"
      CR_MODE="3"
+     CR_PERMISSIVE="1"
 fi
 
 BUILD_CLEAN()
@@ -182,6 +185,12 @@ BUILD_GENERATE_CONFIG()
   fi
   echo " Copy $CR_CONFIG_HELIOS "
   cat $CR_DIR/arch/$CR_ARCH/configs/$CR_CONFIG_HELIOS >> $CR_DIR/arch/$CR_ARCH/configs/tmp_defconfig
+  if [ $CR_PERMISSIVE = "1" ]; then
+    echo " Building Permissive Kernel"
+    echo "CONFIG_ALWAYS_PERMISSIVE=y" >> $CR_DIR/arch/$CR_ARCH/configs/tmp_defconfig
+   else
+   	echo " Building Enforced Kernel"
+  fi
   echo " Set $CR_VARIANT to generated config "
   CR_CONFIG=tmp_defconfig
 }
